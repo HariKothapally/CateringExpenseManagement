@@ -5,9 +5,9 @@
 *.sln.docstates
 
 # Build results
-[Bb]in/
-[Oo]bj/
-[Pp]ublish/
+bin/
+obj/
+publish/
 
 # IDE specific files
 .vs/
