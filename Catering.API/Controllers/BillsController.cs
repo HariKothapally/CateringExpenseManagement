@@ -13,11 +13,13 @@ namespace Catering.API.Controllers
     {
         private readonly IBillRepository _repository;
         private readonly string _geminiApiKey;
+        private readonly string _geminiEndpoint;
 
         public BillsController(IBillRepository repository, IConfiguration configuration)
         {
             _repository = repository;
-            _geminiApiKey = configuration["GeminiApiKey"];
+            _geminiApiKey = configuration["GeminiApi:ApiKey"];
+            _geminiEndpoint = configuration["GeminiApi:Endpoint"];
         }
 
         [HttpGet]
@@ -129,7 +131,8 @@ namespace Catering.API.Controllers
         private async Task<string> ExtractJsonFromImageAsync(string imagePath)
         {
             using var client = new HttpClient();
-            string endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key={_geminiApiKey}";
+            // Construct the full URL with the API key
+            string endpoint = $"{_geminiEndpoint}?key={_geminiApiKey}";
 
             // Read and encode the image as Base64
             byte[] imageBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
