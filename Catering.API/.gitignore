@@ -1,0 +1,67 @@
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Pp]ublish/
+
+# IDE specific files
+.vs/
+.vscode/
+
+# Rider specific files
+.idea/
+
+# Secrets files
+secrets.json
+appsettings.*.json
+!appsettings.Template.json # Example: Keep a template file if you have one
+
+# Keep ignoring the main settings file if it contains secrets or local overrides
+# (This line was already present in your file)
+appsettings.json
+
+# NuGet packages folder - typically managed by NuGet itself, but good practice
+packages/
+*.nupkg
+# NuGet v3+ packages cache
+.nuget/packages/
+# NuGet v3+ global packages folder
+# Usually outside the project directory, but can be included if necessary
+# **/packages.config is sometimes excluded if using PackageReference
+
+# Test results
+TestResults/
+*.trx
+
+# Log files
+*.log
+logs/
+
+# Runtime files
+*.runtimeconfig.json
+*.deps.json
+
+# Environment files
+.env
+
+# OS generated files
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Linux
+*~
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
