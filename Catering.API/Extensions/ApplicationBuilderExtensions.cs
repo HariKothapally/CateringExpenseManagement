@@ -9,9 +9,9 @@ public static class ApplicationBuilderExtensions
         }
 
         app.UseHttpsRedirection();
+        app.UseRouting(); // Moved before UseAuthentication and UseAuthorization
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
