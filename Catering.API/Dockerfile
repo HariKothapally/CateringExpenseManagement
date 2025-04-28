@@ -1,6 +1,6 @@
 # Stage 1: Build the application
 # IMPORTANT: Replace '8.0' with your actual .NET version (e.g., 6.0, 7.0, 9.0) from your .csproj!
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy only the project file first to leverage Docker layer caching for dependencies
@@ -25,7 +25,7 @@ RUN dotnet publish "Catering.API.csproj" -c Release -o /app/publish /p:UseAppHos
 
 # Stage 2: Create the final runtime image
 # IMPORTANT: Replace '8.0' with your actual .NET version (must match the SDK version used above)!
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 
 # Copy the published application artifacts from the build stage
