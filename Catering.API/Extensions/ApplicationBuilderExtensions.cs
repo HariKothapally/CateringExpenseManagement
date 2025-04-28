@@ -7,7 +7,7 @@ public static class ApplicationBuilderExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
+        app.UseCors("AllowFrontend");
         app.UseHttpsRedirection();
         app.UseRouting(); // Moved before UseAuthentication and UseAuthorization
         app.UseAuthentication();
