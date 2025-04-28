@@ -4,18 +4,18 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy only the project file first to leverage Docker layer caching for dependencies
-COPY ["Catering.API/Catering.API.csproj", "Catering.API/"]
+COPY ["/Catering.API.csproj", "/"]
 # If Catering.API references other projects, copy their .csproj files here too
 
 # Restore dependencies for the API project
-RUN dotnet restore "Catering.API/Catering.API.csproj"
+RUN dotnet restore "/Catering.API.csproj"
 
 # Copy the entire source code (API and ReactApp) into the build stage
 # Assumes the build context is the parent directory containing both folders.
 COPY . .
 
 # Set the working directory to the API project folder
-WORKDIR "/src/Catering.API"
+WORKDIR "/src"
 
 # Publish the application in Release configuration
 # The <Content Include...> in your .csproj ensures the ReactApp files (excluding node_modules)
