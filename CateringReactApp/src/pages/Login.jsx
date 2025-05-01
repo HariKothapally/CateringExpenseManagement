@@ -1,105 +1,124 @@
-import React, { useState } from 'react';
-import { TextField, Button, Container, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useState } from 'react';
+import { Box, Typography, TextField, Button, Container, Alert, Paper } from '@mui/material';
+import { useAuth } from '../contexts/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom';
 
-const Login = () => {
-  // State uses 'username' and 'password'
-  const [formData, setFormData] = useState({ username: '', password: '' });
-  // Only keep server error state, remove client-side validation errors
-  const [errors, setErrors] = useState({ server: '' });
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+export default function Login() {
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { login, isAuthenticated } = useAuth();
+  const location = useLocation();
 
-  // Remove validateEmail and validatePassword functions
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    // Remove real-time validation logic
-  };
+  if (isAuthenticated) {
+    const from = location.state?.from?.pathname || '/dashboard';
+    return <Navigate to={from} replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    // Reset only the server error
-    setErrors({ server: '' });
-
-    // Remove client-side validation checks before submitting
-    // const emailError = validateEmail(formData.email); // Removed
-    // const passwordError = validatePassword(formData.password); // Removed
-    // if (emailError || passwordError) { // Removed block
-    //   setErrors({ ...errors, email: emailError, password: passwordError });
-    //   setLoading(false);
-    //   return;
-    // }
-
+    setError('');
+    setIsLoading(true);
     try {
-      // Send formData which contains { username: '...', password: '...' }
-      // Ensure your backend API '/api/auth/login' expects 'username' and 'password'
-      const response = await axios.post('/api/auth/login', formData);
-      // Assuming the backend returns a token upon successful login
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        navigate('/dashboard'); // Navigate to dashboard or desired route
-      } else {
-        // Handle cases where login is successful but no token is returned (if applicable)
-        setErrors({ server: 'Login successful, but no token received.' });
-      }
+      await login(credentials);
+      // Navigation is handled in AuthContext
     } catch (err) {
-      // Display error message from the server response, or a generic one
-      const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Login failed. Please check your username and password.';
-      setErrors({ server: errorMessage });
-    } finally {
-      setLoading(false);
+      setError(err.message || 'Invalid username or password');
+      setIsLoading(false);
     }
   };
 
+  const handleChange = (e) => {
+    setCredentials(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
   return (
-    <Container maxWidth="sm">
-      <Typography variant="h4" gutterBottom>
-        Login
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          name="username" // Keep name as "username"
-          label="Username" // Change label to "Username"
-          value={formData.username}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          // Remove error and helperText props related to client-side validation
-        />
-        <TextField
-          name="password"
-          label="Password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          // Remove error and helperText props related to client-side validation
-        />
-        {/* Display only server-side errors */}
-        {errors.server && (
-          <Typography color="error" variant="body2" gutterBottom style={{ marginTop: '10px' }}>
-            {errors.server}
+    <Container 
+      maxWidth="sm" 
+      sx={{ 
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <Paper 
+        elevation={3}
+        sx={{ 
+          p: 4, 
+          width: '100%',
+          borderRadius: 2
+        }}
+      >
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center'
+        }}>
+          <Typography 
+            component="h1" 
+            variant="h4" 
+            sx={{ mb: 3, color: 'primary.main', fontWeight: 600 }}
+          >
+            Sign in
           </Typography>
-        )}
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          // Disable button only when loading
-          disabled={loading}
-          style={{ marginTop: '20px' }} // Added some margin for better spacing
-        >
-          {loading ? 'Logging in...' : 'Login'}
-        </Button>
-      </form>
+
+          {error && (
+            <Alert 
+              severity="error" 
+              sx={{ mb: 2, width: '100%' }}
+            >
+              {error}
+            </Alert>
+          )}
+
+          <Box 
+            component="form" 
+            onSubmit={handleSubmit} 
+            sx={{ width: '100%' }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              value={credentials.username}
+              onChange={handleChange}
+              disabled={isLoading}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              value={credentials.password}
+              onChange={handleChange}
+              disabled={isLoading}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+              disabled={isLoading || !credentials.username || !credentials.password}
+              sx={{ mt: 3, mb: 2, py: 1.5 }}
+            >
+              {isLoading ? 'Signing in...' : 'Sign In'}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
     </Container>
   );
-};
-
-export default Login;
+}
